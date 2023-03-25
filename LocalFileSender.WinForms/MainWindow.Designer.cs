@@ -59,14 +59,14 @@
             ((System.ComponentModel.ISupportInitialize)FileServicePortControl).BeginInit();
             SuspendLayout();
             // 
-            // SplitContainer
+            // MainSplitContainer
             // 
             MainSplitContainer.Dock = DockStyle.Fill;
             MainSplitContainer.IsSplitterFixed = true;
             MainSplitContainer.Location = new Point(0, 0);
-            MainSplitContainer.Name = "SplitContainer";
+            MainSplitContainer.Name = "MainSplitContainer";
             // 
-            // SplitContainer.Panel1
+            // MainSplitContainer.Panel1
             // 
             MainSplitContainer.Panel1.Controls.Add(ClientToolStrip);
             MainSplitContainer.Panel1.Controls.Add(DownloadButton);
@@ -77,7 +77,7 @@
             MainSplitContainer.Panel1.Controls.Add(StoredFileList);
             MainSplitContainer.Panel1.Controls.Add(ClientLabel);
             // 
-            // splitContainer1.Panel2
+            // MainSplitContainer.Panel2
             // 
             MainSplitContainer.Panel2.Controls.Add(FileServiceStartStopButton);
             MainSplitContainer.Panel2.Controls.Add(SharedDirectoryControl);
@@ -90,13 +90,13 @@
             MainSplitContainer.SplitterDistance = 400;
             MainSplitContainer.TabIndex = 0;
             // 
-            // ToolStrip
+            // ClientToolStrip
             // 
             ClientToolStrip.Dock = DockStyle.Bottom;
             ClientToolStrip.ImageScalingSize = new Size(20, 20);
             ClientToolStrip.Items.AddRange(new ToolStripItem[] { DownloadProgressBar, NotifyMessageImage, NotifyMessageLabel });
             ClientToolStrip.Location = new Point(0, 432);
-            ClientToolStrip.Name = "ToolStrip";
+            ClientToolStrip.Name = "ClientToolStrip";
             ClientToolStrip.Size = new Size(400, 27);
             ClientToolStrip.TabIndex = 13;
             ClientToolStrip.Text = "ToolStrip";
@@ -113,7 +113,6 @@
             NotifyMessageImage.ImageTransparentColor = Color.Magenta;
             NotifyMessageImage.Name = "NotifyMessageImage";
             NotifyMessageImage.Size = new Size(29, 24);
-            NotifyMessageImage.Text = "";
             // 
             // NotifyMessageLabel
             // 
@@ -124,7 +123,7 @@
             // DownloadButton
             // 
             DownloadButton.Location = new Point(291, 396);
-            DownloadButton.Name = "RH_DownloadButton";
+            DownloadButton.Name = "DownloadButton";
             DownloadButton.Size = new Size(94, 29);
             DownloadButton.TabIndex = 11;
             DownloadButton.Text = "Download";
@@ -238,11 +237,11 @@
             FileServiceLabel.TabIndex = 2;
             FileServiceLabel.Text = "File Service";
             // 
-            // PortControl
+            // FileServicePortControl
             // 
             FileServicePortControl.Location = new Point(135, 78);
             FileServicePortControl.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
-            FileServicePortControl.Name = "FileSeervicePortControl";
+            FileServicePortControl.Name = "FileServicePortControl";
             FileServicePortControl.Size = new Size(249, 27);
             FileServicePortControl.TabIndex = 1;
             FileServicePortControl.ValueChanged += FileServicePortControl_ValueChanged;

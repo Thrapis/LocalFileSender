@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using LocalFileSender.Library.Models;
+using LocalFileSender.Library.Models.Storage;
 using LocalFileSender.Library.Status;
 
 namespace LocalFileSender.Library.Services

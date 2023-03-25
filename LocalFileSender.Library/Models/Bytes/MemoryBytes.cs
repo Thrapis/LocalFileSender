@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LocalFileSender.Library.Models
+namespace LocalFileSender.Library.Models.Bytes
 {
     public struct MemoryBytes
     {

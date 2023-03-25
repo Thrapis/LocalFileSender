@@ -1,7 +1,10 @@
 using LocalFileSender.Library.Handlers;
-using LocalFileSender.Library.Models;
+using LocalFileSender.Library.Models.Progress;
+using LocalFileSender.Library.Models.Storage;
 using LocalFileSender.Library.Services;
 using LocalFileSender.WinForms.Properties;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace LocalFileSender.WinForms
 {
@@ -21,7 +24,7 @@ namespace LocalFileSender.WinForms
         public MainWindow()
         {
             InitializeComponent();
-            
+
             _applicationState = ApplicationState.Load(_stateFileFullPath);
 
             if (_applicationState != null)
@@ -44,6 +47,7 @@ namespace LocalFileSender.WinForms
                 SaveDirectoryControl.Text = Path.Combine(_currentDirectory, "Downloads");
             }
 
+            DownloadProgressBar.Visible = false;
             NotifyMessageLabel.Text = "";
             NotifyMessageImage.Image = null;
             GlobalTimer.Interval = 100;
@@ -106,12 +110,16 @@ namespace LocalFileSender.WinForms
 
             try
             {
-                var list = await handler.GetFileList(_applicationState!.Hostname, _applicationState.Hostport);
+                List<StoredFile> list = new();
+                await Task.Run(() =>
+                {
+                    list = handler.GetFileList(_applicationState!.Hostname, _applicationState.Hostport);
+                });
                 StoredFileList.DataSource = list;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Exception", ex.Message);
+                MessageBox.Show(ex.Message, "Exception");
             }
 
             NotifyMessageImage.Image = null;
@@ -138,30 +146,31 @@ namespace LocalFileSender.WinForms
                 var file = (StoredFile)item;
                 FileRecieveHandler handler = new FileRecieveHandler();
 
-                DownloadProgress progress = new DownloadProgress();
-                EventHandler action = (obj, evnt) =>
-                {
-                    NotifyMessageLabel.Text = progress.DownloadSpeedFor(1);
-                    DownloadProgressBar.Value = progress.DownloadedPercent();
-                };
-
+                DownloadProgressBar.Visible = true;
                 NotifyMessageImage.Image = Resources.Downloading;
-                GlobalTimer.Tick += action;
 
                 try
                 {
-                    await handler.Recieve(file.FileName, _applicationState!.SaveDirectory, 
-                        _applicationState.Hostname, _applicationState.Hostport, progress);
+                    Action<DownloadProgress> onDownload = (p) =>
+                    {
+                        DownloadProgressBar.Control.Invoke(() => DownloadProgressBar.Value = p.Progress);
+                        NotifyMessageLabel.Text = p.ProgressDetails;
+                    };
+                    await Task.Run(() =>
+                    {
+                        handler.Recieve(file.FileName, _applicationState!.SaveDirectory,
+                            _applicationState.Hostname, _applicationState.Hostport, onDownload);
+                    });
                 }
                 catch (Exception ex)
                 {
-                    MessageBox .Show("Exception", ex.Message);
+                    MessageBox.Show(ex.Message, "Exception");
                 }
-                
-                GlobalTimer.Tick -= action;
+
                 NotifyMessageImage.Image = null;
                 NotifyMessageLabel.Text = "";
                 DownloadProgressBar.Value = 0;
+                DownloadProgressBar.Visible = false;
             }
         }
 
@@ -182,5 +191,7 @@ namespace LocalFileSender.WinForms
         {
             _applicationState!.SaveDirectory = SaveDirectoryControl.Text;
         }
+
+
     }
 }
