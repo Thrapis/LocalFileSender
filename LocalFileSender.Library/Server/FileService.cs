@@ -59,13 +59,13 @@ namespace LocalFileSender.Library.Services
                         continue;
                     }
 
-                    RequestType requestType = (RequestType)request[0];
-                    if (requestType == RequestType.GetFileList)
+                    RequestStatus requestType = (RequestStatus)request[0];
+                    if (requestType == RequestStatus.GetFileList)
                     {
                         var task = Task.Run(() => FileListProcessor.Process(socket, token), token);
                         task.ContinueWith(t => socket.Close());
                     }
-                    else if (requestType == RequestType.SendFile)
+                    else if (requestType == RequestStatus.SendFile)
                     {
                         var task = Task.Run(() => FileSendProcessor.Process(socket, token), token);
                         task.ContinueWith(t => socket.Close());

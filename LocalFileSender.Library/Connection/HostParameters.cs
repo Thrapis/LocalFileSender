@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LocalFileSender.Library.Classify
+namespace LocalFileSender.Library.Connection
 {
-    public enum RequestType : byte
+    public struct HostParameters
     {
-        GetFileList,
-        SendFile
+        public string Name;
+        public int Port;
     }
 }

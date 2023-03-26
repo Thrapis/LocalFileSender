@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using LocalFileSender.Library.Classify;
+using LocalFileSender.Library.Models.Convert;
 using LocalFileSender.Library.Models.Storage;
 using LocalFileSender.Library.Status;
 
@@ -10,45 +12,58 @@ namespace LocalFileSender.Library.Services
     {
         public static async Task Process(Socket socket, CancellationToken token)
         {
-            byte[] buffer = new byte[1024];
-            await socket.ReceiveAsync(buffer, cancellationToken: token);
-            if (token.IsCancellationRequested) return;
+            byte[] fileNameBuffer = new byte[1024];
+            byte[] clientAnswer = new byte[1];
 
-            string fileName = Encoding.UTF8.GetString(buffer).Replace("\0", string.Empty);
-            StoredFile? file = StoredFileCommander.StoredFiles.FirstOrDefault(s => s.FileName == fileName);
-
-            if (file != null)
+            do
             {
-                byte[] approved = new byte[1] { (byte)AnswerStatus.Approved };
-                await socket.SendAsync(approved, cancellationToken: token);
+                await socket.ReceiveAsync(fileNameBuffer, cancellationToken: token);
                 if (token.IsCancellationRequested) return;
 
-                byte[] fileSize = Encoding.UTF8.GetBytes(file.ByteSize.Count.ToString());
-                await socket.SendAsync(fileSize);
-                if (token.IsCancellationRequested) return;
+                string fileName = Encoding.UTF8.GetString(fileNameBuffer).Replace("\0", string.Empty);
+                StoredFile? file = StoredFileCommander.StoredFiles.FirstOrDefault(s => s.FileName == fileName);
 
-                byte[] clientAnswer = new byte[1];
+                await HandleFileRequestAsync(socket, file, token);
+                if (token.IsCancellationRequested) return;
 
                 await socket.ReceiveAsync(clientAnswer, cancellationToken: token);
                 if (token.IsCancellationRequested) return;
 
-                AnswerStatus answer = (AnswerStatus)clientAnswer[0];
-                if (answer == AnswerStatus.Continue)
+            } while ((RequestStatus)clientAnswer[0] == RequestStatus.Continue);
+        }
+
+        private static async Task HandleFileRequestAsync(Socket socket, StoredFile? file, CancellationToken token)
+        {
+            byte[] ourAnswer = new byte[1];
+            byte[] clientAnswer = new byte[1];
+
+            if (file != null)
+            {
+                byte[] approved = new byte[1] { (byte)ResponseStatus.Approved };
+                await socket.SendAsync(approved, cancellationToken: token);
+                if (token.IsCancellationRequested) return;
+
+                byte[] fileSizeB = LongByteArrayConverter.Convert(file.ByteSize.Count);
+                await socket.SendAsync(fileSizeB);
+                if (token.IsCancellationRequested) return;
+
+                await socket.ReceiveAsync(clientAnswer, cancellationToken: token);
+                if (token.IsCancellationRequested) return;
+
+                if ((RequestStatus)clientAnswer[0] == RequestStatus.Continue)
                 {
                     await SendFileAsync(socket, file, token);
-                    if (token.IsCancellationRequested) return;
-
-                    await socket.ReceiveAsync(clientAnswer, cancellationToken: token);
                     if (token.IsCancellationRequested) return;
                 }
             }
             else
             {
-                byte[] nofileexception = new byte[1] { (byte)AnswerStatus.NoFileException };
-                await socket.SendAsync(nofileexception, cancellationToken: token);
+                ourAnswer[0] = (byte)ResponseStatus.NoFileException;
+                await socket.SendAsync(ourAnswer, cancellationToken: token);
                 if (token.IsCancellationRequested) return;
             }
         }
+
 
         private static async Task SendFileAsync(Socket socket, StoredFile file, CancellationToken token)
         {

@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace LocalFileSender.Library.Status
 {
-    public enum AnswerStatus : byte
+    public enum ResponseStatus : byte
     {
+        None = 0,
         Approved,
         AccessDenied,
-        Unknownxception,
+        UnknownException = 16,
         NoFileException,
-        Complete,
-        Continue
     }
 }

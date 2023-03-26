@@ -1,57 +1,64 @@
 ﻿using LocalFileSender.Library.Classify;
+using LocalFileSender.Library.Models.Convert;
 using LocalFileSender.Library.Models.Progress;
 using LocalFileSender.Library.Status;
 using System.Net.Sockets;
 using System.Text;
 
-namespace LocalFileSender.Library.Handlers
+namespace LocalFileSender.Library.Client
 {
-    public class FileRecieveHandler
+    public class FileRecieveRequest : IClientRequestScenario<int>
     {
-        public void Recieve(string fileName, string toDirectory, string hostname, int port, Action<DownloadProgress> onDownload)
+        public List<string> FilePoll = new List<string>();
+        public string SaveDirectory = "\\Downloads";
+        public Action<DownloadProgress> OnDownload = (dp) => { };
+
+        public int Execute(Socket socket)
         {
-            TcpClient client = new TcpClient();
-            try
+            int downloaded = 0;
+            byte[] ourAnswer = new byte[1];
+            byte[] serverAnswer = new byte[1];
+
+            ourAnswer[0] = (byte)RequestStatus.SendFile;
+            socket.Send(ourAnswer);
+
+            for (int i = 0; i < FilePoll.Count; i++)
             {
-                client.Connect(hostname, port);
-                var socket = client.GetStream().Socket;
-                socket.ReceiveTimeout = 5000;
-                socket.SendTimeout = 5000;
-
-                byte[] ourAnswer, serverAnswer = new byte[1];
-
-                ourAnswer = new byte[1] { (byte)RequestType.SendFile };
-                socket.Send(ourAnswer);
+                var fileName = FilePoll[i];
 
                 byte[] byteFileName = Encoding.UTF8.GetBytes(fileName);
                 socket.Send(byteFileName);
 
                 socket.Receive(serverAnswer);
-                AnswerStatus answerStatus = (AnswerStatus)serverAnswer[0];
 
-                if (answerStatus == AnswerStatus.Approved)
+                if ((ResponseStatus)serverAnswer[0] == ResponseStatus.Approved)
                 {
-                    byte[] fileSizeB = new byte[64];
+                    byte[] fileSizeB = new byte[8];
                     socket.Receive(fileSizeB);
-                    string fileSizeS = Encoding.UTF8.GetString(fileSizeB).Replace("\0", string.Empty);
-                    long fileSize = Convert.ToInt64(fileSizeS);
+                    long fileSize = LongByteArrayConverter.Convert(fileSizeB);
 
-                    ourAnswer = new byte[1] { (byte)AnswerStatus.Continue };
+                    ourAnswer[0] = (byte)RequestStatus.Continue;
                     socket.Send(ourAnswer);
 
-                    SaveFile(socket, fileName, toDirectory, fileSize, onDownload);
+                    SaveFile(socket, fileName, fileSize, SaveDirectory, OnDownload);
 
-                    ourAnswer = new byte[1] { (byte)AnswerStatus.Complete };
+                    downloaded++;
+                }
+
+                if (i + 1 < FilePoll.Count)
+                {
+                    ourAnswer[0] = (byte)RequestStatus.Continue;
                     socket.Send(ourAnswer);
                 }
             }
-            finally
-            {
-                client.Close();
-            }
+
+            ourAnswer[0] = (byte)RequestStatus.Complete;
+            socket.Send(ourAnswer);
+
+            return downloaded;
         }
 
-        public void SaveFile(Socket socket, string fileName, string directory, long fileSize, Action<DownloadProgress> onDownload)
+        public void SaveFile(Socket socket, string fileName, long fileSize, string directory, Action<DownloadProgress> onDownload)
         {
             if (!Directory.Exists(directory))
             {
@@ -70,7 +77,7 @@ namespace LocalFileSender.Library.Handlers
 
             string fullPath = Path.Combine(directory, targetFileName);
 
-            DownloadProgressTimer progress = new DownloadProgressTimer(fileSize, 500);
+            DownloadProgressTimer progress = new DownloadProgressTimer(fileName, fileSize, 500);
             progress.ProgressChanged += onDownload;
             progress.Start();
             using (FileStream fs = new FileStream(fullPath, FileMode.Create))

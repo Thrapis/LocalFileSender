@@ -12,6 +12,8 @@ namespace LocalFileSender.Library.Models.Progress
     {
         private Stopwatch _stopwatch = new Stopwatch();
         private List<TimedBytes> _history = new List<TimedBytes>();
+
+        private string _fileName;
         private MemoryBytes _fileSize;
 
         private int _eventEveryMilisec;
@@ -23,8 +25,9 @@ namespace LocalFileSender.Library.Models.Progress
 
         public bool IsRunning => _stopwatch.IsRunning;
 
-        public DownloadProgressTimer(long fileSize, int eventEveryMilisec)
+        public DownloadProgressTimer(string fileName, long fileSize, int eventEveryMilisec)
         {
+            _fileName = fileName;
             _fileSize = new MemoryBytes(fileSize);
             _eventEveryMilisec = eventEveryMilisec;
         }
@@ -52,13 +55,13 @@ namespace LocalFileSender.Library.Models.Progress
                 _history.Add(new TimedBytes(_stopwatch.Elapsed, bytes));
                 if ((_stopwatch.Elapsed - _lastEvent).TotalMilliseconds > _eventEveryMilisec)
                 {
-                    ProgressChanged.Invoke(GetStatistics());
+                    ProgressChanged.Invoke(GetProgress());
                     _lastEvent = _stopwatch.Elapsed;
                 }
             }
         }
 
-        private DownloadProgress GetStatistics(int seconds = 1)
+        private DownloadProgress GetProgress(int seconds = 1)
         {
             var now = _stopwatch.Elapsed;
             long totalBytes = _history
@@ -66,11 +69,12 @@ namespace LocalFileSender.Library.Models.Progress
                 .Sum(t => t.Bytes) / seconds;
 
             var percent = _fileSize.Count == 0 ? 0 :
-                _history.Sum(t => t.Bytes) * 100 / _fileSize.Count;
+                _history.Sum(t => t.Bytes) * 100d / _fileSize.Count;
 
-            return new DownloadProgress() 
+            return new DownloadProgress()
             {
-                Progress = (int)percent,
+                FileName = _fileName,
+                Progress = (int)Math.Round(percent),
                 ProgressDetails = $"{MemoryBytes.Format(totalBytes)}/s" 
             };
         }

@@ -1,31 +1,35 @@
-using LocalFileSender.Library.Handlers;
-using LocalFileSender.Library.Models.Progress;
+using LocalFileSender.Library.Client;
+using LocalFileSender.Library.Connection;
 using LocalFileSender.Library.Models.Storage;
 using LocalFileSender.Library.Services;
 using LocalFileSender.WinForms.Properties;
-using System.ComponentModel;
-using System.Threading.Tasks;
 
 namespace LocalFileSender.WinForms
 {
     public partial class MainWindow : Form, IDisposable
     {
+        private const string AppStateFileName = "application-state.json";
+
         private const string DefaultHostname = "127.0.0.1";
         private const int DefaultPort = 8877;
 
-        private string _stateFile = "application-state.json";
         private string _currentDirectory = Directory.GetCurrentDirectory();
-        private string _stateFileFullPath => Path.Combine(_currentDirectory, _stateFile);
-
+        
         private ApplicationState? _applicationState;
-
         private FileService _fileService = new FileService();
+
+        private string StateFileFullPath => Path.Combine(_currentDirectory, AppStateFileName);
+        private HostParameters Host => new HostParameters()
+        {
+            Name = _applicationState!.Hostname, 
+            Port = _applicationState.Hostport
+        };
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _applicationState = ApplicationState.Load(_stateFileFullPath);
+            _applicationState = ApplicationState.Load(StateFileFullPath);
 
             if (_applicationState != null)
             {
@@ -57,7 +61,7 @@ namespace LocalFileSender.WinForms
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             _fileService.StopService();
-            _applicationState!.Save(_stateFileFullPath);
+            _applicationState!.Save(StateFileFullPath);
         }
 
         // File Service
@@ -104,7 +108,9 @@ namespace LocalFileSender.WinForms
 
         private async void PollButton_Click(object sender, EventArgs e)
         {
-            FileListPollHandler handler = new FileListPollHandler();
+            ClientInstance<List<StoredFile>> client = new ClientInstance<List<StoredFile>>();
+            FileListPollRequest request = new FileListPollRequest();
+
             NotifyMessageImage.Image = Resources.Loading;
             NotifyMessageLabel.Text = "Polling files...";
 
@@ -113,13 +119,13 @@ namespace LocalFileSender.WinForms
                 List<StoredFile> list = new();
                 await Task.Run(() =>
                 {
-                    list = handler.GetFileList(_applicationState!.Hostname, _applicationState.Hostport);
+                    list = client.HandleRequest(Host, request);
                 });
                 StoredFileList.DataSource = list;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Exception");
+                MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             NotifyMessageImage.Image = null;
@@ -144,27 +150,31 @@ namespace LocalFileSender.WinForms
             if (item != null)
             {
                 var file = (StoredFile)item;
-                FileRecieveHandler handler = new FileRecieveHandler();
+                ClientInstance<int> client = new ClientInstance<int>();
+                FileRecieveRequest request = new FileRecieveRequest()
+                {
+                    FilePoll = new List<string>() { file.FileName },
+                    SaveDirectory = _applicationState!.SaveDirectory,
+                    OnDownload = (p) =>
+                    {
+                        DownloadProgressBar.Control.Invoke(() => DownloadProgressBar.Value = p.Progress);
+                        NotifyMessageLabel.Text = $"{p.ProgressDetails} for {p.FileName}";
+                    }
+                };
 
                 DownloadProgressBar.Visible = true;
                 NotifyMessageImage.Image = Resources.Downloading;
 
                 try
                 {
-                    Action<DownloadProgress> onDownload = (p) =>
-                    {
-                        DownloadProgressBar.Control.Invoke(() => DownloadProgressBar.Value = p.Progress);
-                        NotifyMessageLabel.Text = p.ProgressDetails;
-                    };
                     await Task.Run(() =>
                     {
-                        handler.Recieve(file.FileName, _applicationState!.SaveDirectory,
-                            _applicationState.Hostname, _applicationState.Hostport, onDownload);
+                        client.HandleRequest(Host, request);
                     });
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Exception");
+                    MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 NotifyMessageImage.Image = null;
@@ -191,7 +201,5 @@ namespace LocalFileSender.WinForms
         {
             _applicationState!.SaveDirectory = SaveDirectoryControl.Text;
         }
-
-
     }
 }
