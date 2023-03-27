@@ -15,6 +15,7 @@ namespace LocalFileSender.Library.Client
 
         public int Execute(Socket socket)
         {
+            int downloadNumber = 0;
             int downloaded = 0;
             byte[] ourAnswer = new byte[1];
             byte[] serverAnswer = new byte[1];
@@ -24,6 +25,7 @@ namespace LocalFileSender.Library.Client
 
             for (int i = 0; i < FilePoll.Count; i++)
             {
+                downloadNumber++;
                 var fileName = FilePoll[i];
 
                 byte[] byteFileName = Encoding.UTF8.GetBytes(fileName);
@@ -40,7 +42,14 @@ namespace LocalFileSender.Library.Client
                     ourAnswer[0] = (byte)RequestStatus.Continue;
                     socket.Send(ourAnswer);
 
-                    SaveFile(socket, fileName, fileSize, SaveDirectory, OnDownload);
+                    DownloadFile file = new DownloadFile()
+                    {
+                        Name = fileName,
+                        Size = fileSize,
+                        PollNumber = downloadNumber,
+                        PollTotal = FilePoll.Count
+                    };
+                    SaveFile(socket, file, SaveDirectory, OnDownload);
 
                     downloaded++;
                 }
@@ -58,26 +67,29 @@ namespace LocalFileSender.Library.Client
             return downloaded;
         }
 
-        public void SaveFile(Socket socket, string fileName, long fileSize, string directory, Action<DownloadProgress> onDownload)
+        public void SaveFile(Socket socket, DownloadFile file, string directory, Action<DownloadProgress> onDownload)
         {
-            if (!Directory.Exists(directory))
+            string directoryToFile = Path.GetDirectoryName(file.Name) ?? string.Empty;
+            string accurateDownloadDirectory = Path.Combine(directory, directoryToFile);
+
+            if (!Directory.Exists(accurateDownloadDirectory))
             {
-                Directory.CreateDirectory(directory);
+                Directory.CreateDirectory(accurateDownloadDirectory);
             }
 
-            string targetFileName = fileName;
-            var extension = Path.GetExtension(fileName) ?? "";
+            string targetFileName = file.Name;
+            var extension = Path.GetExtension(file.Name) ?? "";
             int counter = 1;
             while (File.Exists(Path.Combine(directory, targetFileName)))
             {
-                var newFileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName) + $" ({counter})";
+                var newFileNameWithoutExt = Path.GetFileNameWithoutExtension(file.Name) + $" ({counter})";
                 targetFileName = newFileNameWithoutExt + extension;
                 counter++;
             }
 
             string fullPath = Path.Combine(directory, targetFileName);
 
-            DownloadProgressTimer progress = new DownloadProgressTimer(fileName, fileSize, 500);
+            DownloadProgressTimer progress = new DownloadProgressTimer(file, 500);
             progress.ProgressChanged += onDownload;
             progress.Start();
             using (FileStream fs = new FileStream(fullPath, FileMode.Create))
@@ -95,6 +107,7 @@ namespace LocalFileSender.Library.Client
 
                         bytes = socket.Receive(responseData);
                         attempt++;
+
                     } while (bytes == 0 && attempt < maxAttempts);
 
                     if (bytes == 0 && attempt >= maxAttempts)
@@ -107,7 +120,7 @@ namespace LocalFileSender.Library.Client
                     sumBytes += bytes;
                     progress.AddProgress(bytes);
                 }
-                while (sumBytes < fileSize);
+                while (sumBytes < file.Size);
             }
             progress.Stop();
             progress.ProgressChanged -= onDownload;

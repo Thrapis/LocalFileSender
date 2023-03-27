@@ -8,8 +8,8 @@ namespace LocalFileSender.Library.Models.Progress
 {
     public class DownloadProgress
     {
-        public string FileName { get; set; } = string.Empty;
         public int Progress { get; set; }
         public string ProgressDetails { get; set; } = string.Empty;
+        public DownloadFile File { get; set; } = new();
     }
 }

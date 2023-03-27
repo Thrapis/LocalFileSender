@@ -1,5 +1,6 @@
 using LocalFileSender.Library.Client;
 using LocalFileSender.Library.Connection;
+using LocalFileSender.Library.Models.Bytes;
 using LocalFileSender.Library.Models.Storage;
 using LocalFileSender.Library.Services;
 using LocalFileSender.WinForms.Properties;
@@ -14,14 +15,16 @@ namespace LocalFileSender.WinForms
         private const int DefaultPort = 8877;
 
         private string _currentDirectory = Directory.GetCurrentDirectory();
-        
+
+        private StoredDirectory _polledDirectory = new();
+
         private ApplicationState? _applicationState;
         private FileService _fileService = new FileService();
 
         private string StateFileFullPath => Path.Combine(_currentDirectory, AppStateFileName);
         private HostParameters Host => new HostParameters()
         {
-            Name = _applicationState!.Hostname, 
+            Name = _applicationState!.Hostname,
             Port = _applicationState.Hostport
         };
 
@@ -56,6 +59,25 @@ namespace LocalFileSender.WinForms
             NotifyMessageImage.Image = null;
             GlobalTimer.Interval = 100;
             GlobalTimer.Enabled = true;
+
+            LoadTreeViewImageSet();
+        }
+
+
+        private void LoadTreeViewImageSet()
+        {
+            Point destPt = new Point(6, 0);
+            Size size = new Size(22, 16);
+            StoredFileTreeView.ImageList = new ImageList();
+            StoredFileTreeView.ImageList.ImageSize = size;
+            foreach (string key in HierarchyImageList.Images.Keys)
+            {
+                Bitmap bmp = new Bitmap(size.Width, size.Height);
+                Graphics g = Graphics.FromImage(bmp);
+                g.DrawImage(HierarchyImageList.Images[key], destPt);
+                g.Dispose();
+                StoredFileTreeView.ImageList.Images.Add(key, (Image)bmp);
+            }
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)
@@ -64,7 +86,111 @@ namespace LocalFileSender.WinForms
             _applicationState!.Save(StateFileFullPath);
         }
 
+        //
+        // Tree View
+        //
+
+        private void UpdateFileTreeView()
+        {
+            StoredFileTreeView.Nodes.Clear();
+            TreeNode[] nodes = DirectoryToTreeNodeList(_polledDirectory, _polledDirectory);
+            StoredFileTreeView.Nodes.AddRange(nodes);
+        }
+
+        private TreeNode[] DirectoryToTreeNodeList(StoredDirectory rootDirectory, StoredDirectory storedDirectory)
+        {
+            var result = new List<TreeNode>();
+
+            foreach (IStored stored in storedDirectory.Stored)
+            {
+                TreeNode node = new TreeNode(stored.Name);
+                node.Tag = stored;
+
+
+                if (stored is StoredFile)
+                {
+                    node.ImageIndex = 1;
+                    node.SelectedImageIndex = 1;
+                    node.ToolTipText = $"File {stored.ByteSize.Formatted}";
+                }
+                else if (stored is StoredDirectory)
+                {
+                    TreeNode[] subNodes = DirectoryToTreeNodeList(rootDirectory, (StoredDirectory)stored);
+                    node.Nodes.AddRange(subNodes);
+                    node.ImageIndex = 0;
+                    node.SelectedImageIndex = 0;
+                    node.ToolTipText = $"Folder {stored.ByteSize.Formatted}";
+                }
+
+                result.Add(node);
+            }
+
+            return result.ToArray();
+        }
+
+        private void StoredFileTreeView_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node!.Tag is StoredDirectory && e.Action == TreeViewAction.ByMouse)
+            {
+                CheckChildren(e.Node, e.Node.Checked);
+            }
+            else if (e.Node!.Tag is StoredFile)
+            {
+                VerifyParentCheck(e.Node);
+            }
+
+            var total = StoredFileTreeView.Nodes.Descendants()
+                    .Where(n => n.Tag is StoredFile && n.Checked)
+                    .Sum(n => ((StoredFile)n.Tag).ByteSize.Count);
+            TotalByteSizeLabel.Text = MemoryBytes.Format(total);
+        }
+
+        private void CheckAllButton_Click(object sender, EventArgs e)
+        {
+            foreach (var node in StoredFileTreeView.Nodes.Descendants())
+            {
+                node.Checked = true;
+            }
+        }
+
+        private void UncheckAllButton_Click(object sender, EventArgs e)
+        {
+            foreach (var node in StoredFileTreeView.Nodes.Descendants())
+            {
+                node.Checked = false;
+            }
+        }
+
+        private void CheckChildren(TreeNode rootNode, bool isChecked)
+        {
+            foreach (TreeNode node in rootNode.Nodes)
+            {
+                CheckChildren(node, isChecked);
+                node.Checked = isChecked;
+            }
+        }
+
+        private void VerifyParentCheck(TreeNode childNode)
+        {
+            if (childNode.Parent == null) return;
+
+            bool allRestChecked = true;
+            foreach (TreeNode node in childNode.Parent.Nodes)
+            {
+                if (!node.Checked)
+                {
+                    allRestChecked = false;
+                    break;
+                }
+            }
+            childNode.Parent.Checked = allRestChecked;
+
+            VerifyParentCheck(childNode.Parent);
+        }
+
+        //
         // File Service
+        //
 
         private void FileServiceStartStopButton_Click(object sender, EventArgs e)
         {
@@ -100,15 +226,17 @@ namespace LocalFileSender.WinForms
 
         private void DirectoryControl_TextChanged(object sender, EventArgs e)
         {
-            StoredFileCommander.SharedDirectory = SharedDirectoryControl.Text;
+            StoredCommander.SharedDirectoryFullPath = SharedDirectoryControl.Text;
             _applicationState!.SharedDirectory = SharedDirectoryControl.Text;
         }
 
+        //
         // List Poll Handler
+        //
 
         private async void PollButton_Click(object sender, EventArgs e)
         {
-            ClientInstance<List<StoredFile>> client = new ClientInstance<List<StoredFile>>();
+            ClientInstance<StoredDirectory> client = new ClientInstance<StoredDirectory>();
             FileListPollRequest request = new FileListPollRequest();
 
             NotifyMessageImage.Image = Resources.Loading;
@@ -116,12 +244,11 @@ namespace LocalFileSender.WinForms
 
             try
             {
-                List<StoredFile> list = new();
                 await Task.Run(() =>
                 {
-                    list = client.HandleRequest(Host, request);
+                    _polledDirectory = client.HandleRequest(Host, request);
                 });
-                StoredFileList.DataSource = list;
+                UpdateFileTreeView();
             }
             catch (Exception ex)
             {
@@ -142,28 +269,37 @@ namespace LocalFileSender.WinForms
             _applicationState!.Hostport = (int)HostPortControl.Value;
         }
 
+        //
         // Recieve Handler
+        //
 
         private async void DownloadButton_Click(object sender, EventArgs e)
         {
-            var item = StoredFileList.SelectedItems[0];
-            if (item != null)
+            List<string> filesToDownload = StoredFileTreeView.Nodes.Descendants()
+                    .Where(n => n.Tag is StoredFile && n.Checked)
+                    .Select(n => _polledDirectory.GetRelativePath((IStored)n.Tag))
+                    .ToList();
+
+            if (filesToDownload.Count != 0)
             {
-                var file = (StoredFile)item;
                 ClientInstance<int> client = new ClientInstance<int>();
                 FileRecieveRequest request = new FileRecieveRequest()
                 {
-                    FilePoll = new List<string>() { file.FileName },
+                    FilePoll = filesToDownload,
                     SaveDirectory = _applicationState!.SaveDirectory,
                     OnDownload = (p) =>
                     {
                         DownloadProgressBar.Control.Invoke(() => DownloadProgressBar.Value = p.Progress);
-                        NotifyMessageLabel.Text = $"{p.ProgressDetails} for {p.FileName}";
+                        string text = $"{p.ProgressDetails} for {p.File.Name} ({p.File.PollNumber}/{p.File.PollTotal})";
+                        NotifyMessageLabel.Text = text;
+                        NotifyMessageLabel.ToolTipText = text;
+                        NotifyMessageImage.Image = Resources.Downloading;
                     }
                 };
 
                 DownloadProgressBar.Visible = true;
                 NotifyMessageImage.Image = Resources.Downloading;
+                DownloadButton.Enabled = false;
 
                 try
                 {
@@ -177,8 +313,10 @@ namespace LocalFileSender.WinForms
                     MessageBox.Show(ex.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
+                DownloadButton.Enabled = true;
                 NotifyMessageImage.Image = null;
-                NotifyMessageLabel.Text = "";
+                NotifyMessageLabel.Text = string.Empty;
+                NotifyMessageLabel.ToolTipText = string.Empty;
                 DownloadProgressBar.Value = 0;
                 DownloadProgressBar.Visible = false;
             }

@@ -13,8 +13,7 @@ namespace LocalFileSender.Library.Models.Progress
         private Stopwatch _stopwatch = new Stopwatch();
         private List<TimedBytes> _history = new List<TimedBytes>();
 
-        private string _fileName;
-        private MemoryBytes _fileSize;
+        private DownloadFile _file;
 
         private int _eventEveryMilisec;
         private TimeSpan _lastEvent;
@@ -25,10 +24,9 @@ namespace LocalFileSender.Library.Models.Progress
 
         public bool IsRunning => _stopwatch.IsRunning;
 
-        public DownloadProgressTimer(string fileName, long fileSize, int eventEveryMilisec)
+        public DownloadProgressTimer(DownloadFile file, int eventEveryMilisec)
         {
-            _fileName = fileName;
-            _fileSize = new MemoryBytes(fileSize);
+            _file = file;
             _eventEveryMilisec = eventEveryMilisec;
         }
 
@@ -68,12 +66,12 @@ namespace LocalFileSender.Library.Models.Progress
                 .Where(t => (now - t.Moment).Seconds < seconds)
                 .Sum(t => t.Bytes) / seconds;
 
-            var percent = _fileSize.Count == 0 ? 0 :
-                _history.Sum(t => t.Bytes) * 100d / _fileSize.Count;
+            var percent = _file.Size == 0 ? 0 :
+                _history.Sum(t => t.Bytes) * 100d / _file.Size;
 
             return new DownloadProgress()
             {
-                FileName = _fileName,
+                File = _file,
                 Progress = (int)Math.Round(percent),
                 ProgressDetails = $"{MemoryBytes.Format(totalBytes)}/s" 
             };

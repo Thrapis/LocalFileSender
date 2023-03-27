@@ -12,16 +12,17 @@ namespace LocalFileSender.Library.Services
     {
         public static async Task Process(Socket socket, CancellationToken token)
         {
-            byte[] fileNameBuffer = new byte[1024];
             byte[] clientAnswer = new byte[1];
 
             do
             {
-                await socket.ReceiveAsync(fileNameBuffer, cancellationToken: token);
+                byte[] fileNameB = new byte[1024];
+                await socket.ReceiveAsync(fileNameB, cancellationToken: token);
                 if (token.IsCancellationRequested) return;
 
-                string fileName = Encoding.UTF8.GetString(fileNameBuffer).Replace("\0", string.Empty);
-                StoredFile? file = StoredFileCommander.StoredFiles.FirstOrDefault(s => s.FileName == fileName);
+                string fileName = Encoding.UTF8.GetString(fileNameB).Replace("\0", string.Empty);
+                StoredDirectory sharedDirectory = await StoredCommander.GetSharedDirectoryAsync();
+                StoredFile? file = sharedDirectory.GetStoredFileByRelativePath(fileName);
 
                 await HandleFileRequestAsync(socket, file, token);
                 if (token.IsCancellationRequested) return;

@@ -60,7 +60,7 @@ namespace LocalFileSender.Library.Services
                     }
 
                     RequestStatus requestType = (RequestStatus)request[0];
-                    if (requestType == RequestStatus.GetFileList)
+                    if (requestType == RequestStatus.GetStored)
                     {
                         var task = Task.Run(() => FileListProcessor.Process(socket, token), token);
                         task.ContinueWith(t => socket.Close());

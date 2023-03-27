@@ -12,7 +12,7 @@ namespace LocalFileSender.Library.Classify
         Continue,
         Stop,
         Complete,
-        GetFileList = 16,
+        GetStored = 16,
         SendFile,
     }
 }

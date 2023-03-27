@@ -26,5 +26,15 @@ namespace LocalFileSender.Library.Models.Bytes
             }
             return string.Format("{0:0.##} {1}", len, sizes[order]);
         }
+
+        public static MemoryBytes operator +(MemoryBytes a, MemoryBytes b)
+        {
+            return new MemoryBytes(a.Count + b.Count);
+        }
+
+        public static MemoryBytes operator -(MemoryBytes a, MemoryBytes b)
+        {
+            return new MemoryBytes(a.Count - b.Count);
+        }
     }
 }

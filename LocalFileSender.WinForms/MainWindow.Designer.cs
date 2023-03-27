@@ -31,6 +31,12 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             MainSplitContainer = new SplitContainer();
+            TotalByteSizeLabel = new Label();
+            TotalLabel = new Label();
+            UncheckAllButton = new Button();
+            CheckAllButton = new Button();
+            StoredFileTreeView = new TreeViewFixed();
+            HierarchyImageList = new ImageList(components);
             ClientToolStrip = new ToolStrip();
             DownloadProgressBar = new ToolStripProgressBar();
             NotifyMessageImage = new ToolStripButton();
@@ -40,7 +46,6 @@
             HostnameControl = new TextBox();
             HostPortControl = new NumericUpDown();
             PollButton = new Button();
-            StoredFileList = new ListBox();
             ClientLabel = new Label();
             FileServiceStartStopButton = new Button();
             SharedDirectoryControl = new TextBox();
@@ -68,13 +73,17 @@
             // 
             // MainSplitContainer.Panel1
             // 
+            MainSplitContainer.Panel1.Controls.Add(TotalByteSizeLabel);
+            MainSplitContainer.Panel1.Controls.Add(TotalLabel);
+            MainSplitContainer.Panel1.Controls.Add(UncheckAllButton);
+            MainSplitContainer.Panel1.Controls.Add(CheckAllButton);
+            MainSplitContainer.Panel1.Controls.Add(StoredFileTreeView);
             MainSplitContainer.Panel1.Controls.Add(ClientToolStrip);
             MainSplitContainer.Panel1.Controls.Add(DownloadButton);
             MainSplitContainer.Panel1.Controls.Add(SaveDirectoryControl);
             MainSplitContainer.Panel1.Controls.Add(HostnameControl);
             MainSplitContainer.Panel1.Controls.Add(HostPortControl);
             MainSplitContainer.Panel1.Controls.Add(PollButton);
-            MainSplitContainer.Panel1.Controls.Add(StoredFileList);
             MainSplitContainer.Panel1.Controls.Add(ClientLabel);
             // 
             // MainSplitContainer.Panel2
@@ -89,6 +98,64 @@
             MainSplitContainer.Size = new Size(800, 459);
             MainSplitContainer.SplitterDistance = 400;
             MainSplitContainer.TabIndex = 0;
+            // 
+            // TotalByteSizeLabel
+            // 
+            TotalByteSizeLabel.AutoSize = true;
+            TotalByteSizeLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
+            TotalByteSizeLabel.Location = new Point(303, 366);
+            TotalByteSizeLabel.Name = "TotalByteSizeLabel";
+            TotalByteSizeLabel.Size = new Size(31, 20);
+            TotalByteSizeLabel.TabIndex = 17;
+            TotalByteSizeLabel.Text = "0 B";
+            // 
+            // TotalLabel
+            // 
+            TotalLabel.AutoSize = true;
+            TotalLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
+            TotalLabel.Location = new Point(249, 366);
+            TotalLabel.Name = "TotalLabel";
+            TotalLabel.Size = new Size(47, 20);
+            TotalLabel.TabIndex = 6;
+            TotalLabel.Text = "Total:";
+            // 
+            // UncheckAllButton
+            // 
+            UncheckAllButton.Location = new Point(112, 363);
+            UncheckAllButton.Name = "UncheckAllButton";
+            UncheckAllButton.Size = new Size(94, 29);
+            UncheckAllButton.TabIndex = 16;
+            UncheckAllButton.Text = "Uncheck All";
+            UncheckAllButton.UseVisualStyleBackColor = true;
+            UncheckAllButton.Click += UncheckAllButton_Click;
+            // 
+            // CheckAllButton
+            // 
+            CheckAllButton.Location = new Point(12, 363);
+            CheckAllButton.Name = "CheckAllButton";
+            CheckAllButton.Size = new Size(94, 29);
+            CheckAllButton.TabIndex = 15;
+            CheckAllButton.Text = "Check All";
+            CheckAllButton.UseVisualStyleBackColor = true;
+            CheckAllButton.Click += CheckAllButton_Click;
+            // 
+            // StoredFileTreeView
+            // 
+            StoredFileTreeView.CheckBoxes = true;
+            StoredFileTreeView.Location = new Point(12, 68);
+            StoredFileTreeView.Name = "StoredFileTreeView";
+            StoredFileTreeView.ShowNodeToolTips = true;
+            StoredFileTreeView.Size = new Size(373, 289);
+            StoredFileTreeView.TabIndex = 14;
+            StoredFileTreeView.AfterCheck += StoredFileTreeView_AfterCheck;
+            // 
+            // HierarchyImageList
+            // 
+            HierarchyImageList.ColorDepth = ColorDepth.Depth8Bit;
+            HierarchyImageList.ImageStream = (ImageListStreamer)resources.GetObject("HierarchyImageList.ImageStream");
+            HierarchyImageList.TransparentColor = Color.Transparent;
+            HierarchyImageList.Images.SetKeyName(0, "Folder.png");
+            HierarchyImageList.Images.SetKeyName(1, "FileDefault.png");
             // 
             // ClientToolStrip
             // 
@@ -168,15 +235,6 @@
             PollButton.Text = "Poll";
             PollButton.UseVisualStyleBackColor = true;
             PollButton.Click += PollButton_Click;
-            // 
-            // StoredFileList
-            // 
-            StoredFileList.FormattingEnabled = true;
-            StoredFileList.ItemHeight = 20;
-            StoredFileList.Location = new Point(12, 68);
-            StoredFileList.Name = "StoredFileList";
-            StoredFileList.Size = new Size(373, 324);
-            StoredFileList.TabIndex = 2;
             // 
             // ClientLabel
             // 
@@ -291,7 +349,6 @@
         private Label ServerLabel;
         private Button FileServiceStartStopButton;
         private Button PollButton;
-        private ListBox StoredFileList;
         private TextBox HostnameControl;
         private NumericUpDown HostPortControl;
         private Button DownloadButton;
@@ -302,5 +359,11 @@
         private ToolStripLabel NotifyMessageLabel;
         private System.Windows.Forms.Timer GlobalTimer;
         private ToolStripProgressBar DownloadProgressBar;
+        private TreeViewFixed StoredFileTreeView;
+        private Label TotalByteSizeLabel;
+        private Label TotalLabel;
+        private Button UncheckAllButton;
+        private Button CheckAllButton;
+        private ImageList HierarchyImageList;
     }
 }

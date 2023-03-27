@@ -8,16 +8,16 @@ using System.Text;
 
 namespace LocalFileSender.Library.Client
 {
-    public class FileListPollRequest : IClientRequestScenario<List<StoredFile>>
+    public class FileListPollRequest : IClientRequestScenario<StoredDirectory>
     {
-        public List<StoredFile> Execute(Socket socket)
+        public StoredDirectory Execute(Socket socket)
         {
-            List<StoredFile> result = new();
+            StoredDirectory result = new();
 
             byte[] ourAnswer = new byte[1];
             byte[] serverAnswer = new byte[1];
 
-            ourAnswer[0] = (byte)RequestStatus.GetFileList;
+            ourAnswer[0] = (byte)RequestStatus.GetStored;
             socket.Send(ourAnswer);
 
             socket.Receive(serverAnswer);
@@ -45,7 +45,7 @@ namespace LocalFileSender.Library.Client
                 socket.Send(ourAnswer);
 
                 string json = Encoding.UTF8.GetString(response.ToArray());
-                var deserialized = JsonConvert.DeserializeObject<List<StoredFile>>(json);
+                var deserialized = JsonConvert.DeserializeObject<StoredDirectory>(json);
                 if (deserialized != null)
                 {
                     result = deserialized;

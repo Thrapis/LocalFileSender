@@ -21,8 +21,8 @@ namespace LocalFileSender.Library.Services
             await socket.SendAsync(ourAnswer, cancellationToken: token);
             if (token.IsCancellationRequested) return;
 
-            List<StoredFile> list = StoredFileCommander.StoredFiles;
-            string json = JsonConvert.SerializeObject(list);
+            StoredDirectory storedDirectory = await StoredCommander.GetSharedDirectoryAsync();
+            string json = JsonConvert.SerializeObject(storedDirectory);
             byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
 
             byte[] jsonSizeB = LongByteArrayConverter.Convert(jsonBytes.LongLength);

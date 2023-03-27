@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalFileSender.WinForms", "LocalFileSender.WinForms\LocalFileSender.WinForms.csproj", "{12C2B462-F83F-4934-8C5D-5F6CBD4F989F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalFileSender.WinForms", "LocalFileSender.WinForms\LocalFileSender.WinForms.csproj", "{12C2B462-F83F-4934-8C5D-5F6CBD4F989F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalFileSender.Library", "LocalFileSender.Library\LocalFileSender.Library.csproj", "{209E148F-FB19-41B7-9405-9C4FCDD79BFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalFileSender.Library", "LocalFileSender.Library\LocalFileSender.Library.csproj", "{209E148F-FB19-41B7-9405-9C4FCDD79BFB}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "LocalFileSenderSetup", "LocalFileSenderSetup\LocalFileSenderSetup.vdproj", "{614254E2-3ABF-4687-8387-DCB0341E7CB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,8 @@ Global
 		{209E148F-FB19-41B7-9405-9C4FCDD79BFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{209E148F-FB19-41B7-9405-9C4FCDD79BFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{209E148F-FB19-41B7-9405-9C4FCDD79BFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{614254E2-3ABF-4687-8387-DCB0341E7CB4}.Debug|Any CPU.ActiveCfg = Debug
+		{614254E2-3ABF-4687-8387-DCB0341E7CB4}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
