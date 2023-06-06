@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LocalFileSender.WinForms
+namespace LocalFileSender.WinForms.Models
 {
     public class ApplicationState
     {
-        public int FileServicePort {  get; set; }
+        public int FileServicePort { get; set; }
         public string SharedDirectory { get; set; } = string.Empty;
         public string Hostname { get; set; } = string.Empty;
         public int Hostport { get; set; }

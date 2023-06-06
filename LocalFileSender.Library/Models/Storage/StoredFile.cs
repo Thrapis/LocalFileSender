@@ -13,6 +13,9 @@ namespace LocalFileSender.Library.Models.Storage
         public string Name => Path.GetFileName(FullPath);
         public MemoryBytes ByteSize { get; set; }
 
+        public string DotExtension => Path.GetExtension(FullPath);
+        public string Extension => DotExtension.Replace(".", string.Empty);
+
         public StoredFile() { }
 
         public StoredFile(string fullPath, long byteSize) : this()

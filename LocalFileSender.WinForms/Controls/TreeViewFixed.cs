@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LocalFileSender.WinForms
+namespace LocalFileSender.WinForms.Controls
 {
     public class TreeViewFixed : TreeView
     {
@@ -18,7 +18,7 @@ namespace LocalFileSender.WinForms
 
         protected override void OnHandleCreated(EventArgs e)
         {
-            SendMessage(this.Handle, TVM_SETEXTENDEDSTYLE, (IntPtr)TVS_EX_DOUBLEBUFFER, (IntPtr)TVS_EX_DOUBLEBUFFER);
+            SendMessage(Handle, TVM_SETEXTENDEDSTYLE, TVS_EX_DOUBLEBUFFER, TVS_EX_DOUBLEBUFFER);
             base.OnHandleCreated(e);
         }
 
