@@ -70,10 +70,11 @@ namespace LocalFileSender.WinForms.Views
             TabPanel.Controls.Add(ClientTab);
             TabPanel.Controls.Add(ServerTab);
             TabPanel.Font = new Font("Segoe UI Semibold", 10.2F, FontStyle.Bold, GraphicsUnit.Point);
-            TabPanel.Location = new Point(12, 12);
+            TabPanel.Location = new Point(10, 9);
+            TabPanel.Margin = new Padding(3, 2, 3, 2);
             TabPanel.Name = "TabPanel";
             TabPanel.SelectedIndex = 0;
-            TabPanel.Size = new Size(778, 429);
+            TabPanel.Size = new Size(681, 361);
             TabPanel.TabIndex = 0;
             // 
             // ClientTab
@@ -92,10 +93,11 @@ namespace LocalFileSender.WinForms.Views
             ClientTab.Controls.Add(HostnameControl);
             ClientTab.Controls.Add(HostportControl);
             ClientTab.Controls.Add(PollButton);
-            ClientTab.Location = new Point(4, 32);
+            ClientTab.Location = new Point(4, 28);
+            ClientTab.Margin = new Padding(3, 2, 3, 2);
             ClientTab.Name = "ClientTab";
-            ClientTab.Padding = new Padding(3);
-            ClientTab.Size = new Size(770, 393);
+            ClientTab.Padding = new Padding(3, 2, 3, 2);
+            ClientTab.Size = new Size(673, 329);
             ClientTab.TabIndex = 0;
             ClientTab.Text = "Client";
             ClientTab.UseVisualStyleBackColor = true;
@@ -103,19 +105,19 @@ namespace LocalFileSender.WinForms.Views
             // TotalLabel
             // 
             TotalLabel.AutoSize = true;
-            TotalLabel.Location = new Point(242, 296);
-            TotalLabel.Margin = new Padding(12);
+            TotalLabel.Location = new Point(212, 261);
+            TotalLabel.Margin = new Padding(10, 9, 10, 9);
             TotalLabel.Name = "TotalLabel";
-            TotalLabel.Size = new Size(50, 23);
+            TotalLabel.Size = new Size(43, 19);
             TotalLabel.TabIndex = 30;
             TotalLabel.Text = "Total:";
             // 
             // SelectSaveDirectoryButton
             // 
-            SelectSaveDirectoryButton.Location = new Point(447, 351);
-            SelectSaveDirectoryButton.Margin = new Padding(12);
+            SelectSaveDirectoryButton.Location = new Point(391, 294);
+            SelectSaveDirectoryButton.Margin = new Padding(10, 9, 10, 9);
             SelectSaveDirectoryButton.Name = "SelectSaveDirectoryButton";
-            SelectSaveDirectoryButton.Size = new Size(100, 30);
+            SelectSaveDirectoryButton.Size = new Size(88, 28);
             SelectSaveDirectoryButton.TabIndex = 29;
             SelectSaveDirectoryButton.Text = "Choose";
             SelectSaveDirectoryButton.UseVisualStyleBackColor = true;
@@ -123,38 +125,39 @@ namespace LocalFileSender.WinForms.Views
             // SaveDirectoryLabel
             // 
             SaveDirectoryLabel.AutoSize = true;
-            SaveDirectoryLabel.Location = new Point(15, 354);
-            SaveDirectoryLabel.Margin = new Padding(12, 12, 6, 12);
+            SaveDirectoryLabel.Location = new Point(13, 299);
+            SaveDirectoryLabel.Margin = new Padding(10, 9, 5, 9);
             SaveDirectoryLabel.Name = "SaveDirectoryLabel";
-            SaveDirectoryLabel.Size = new Size(122, 23);
+            SaveDirectoryLabel.Size = new Size(101, 19);
             SaveDirectoryLabel.TabIndex = 27;
             SaveDirectoryLabel.Text = "Save Directory";
             // 
             // SaveDirectoryControl
             // 
-            SaveDirectoryControl.Location = new Point(149, 351);
-            SaveDirectoryControl.Margin = new Padding(6, 12, 6, 12);
+            SaveDirectoryControl.Location = new Point(130, 296);
+            SaveDirectoryControl.Margin = new Padding(5, 9, 5, 9);
             SaveDirectoryControl.Name = "SaveDirectoryControl";
             SaveDirectoryControl.PlaceholderText = "Directory";
             SaveDirectoryControl.ReadOnly = true;
-            SaveDirectoryControl.Size = new Size(280, 30);
+            SaveDirectoryControl.Size = new Size(246, 26);
             SaveDirectoryControl.TabIndex = 28;
             // 
             // DownloadButton
             // 
-            DownloadButton.Location = new Point(613, 351);
-            DownloadButton.Margin = new Padding(12);
+            DownloadButton.Location = new Point(537, 294);
+            DownloadButton.Margin = new Padding(10, 9, 10, 9);
             DownloadButton.Name = "DownloadButton";
-            DownloadButton.Size = new Size(142, 30);
+            DownloadButton.Size = new Size(124, 28);
             DownloadButton.TabIndex = 26;
             DownloadButton.Text = "Download";
             DownloadButton.UseVisualStyleBackColor = true;
             // 
             // button2
             // 
-            button2.Location = new Point(112, 293);
+            button2.Location = new Point(98, 257);
+            button2.Margin = new Padding(3, 2, 3, 2);
             button2.Name = "button2";
-            button2.Size = new Size(115, 29);
+            button2.Size = new Size(101, 28);
             button2.TabIndex = 25;
             button2.Text = "Uncheck All";
             button2.UseVisualStyleBackColor = true;
@@ -162,9 +165,10 @@ namespace LocalFileSender.WinForms.Views
             // 
             // button1
             // 
-            button1.Location = new Point(12, 293);
+            button1.Location = new Point(10, 257);
+            button1.Margin = new Padding(3, 2, 3, 2);
             button1.Name = "button1";
-            button1.Size = new Size(94, 29);
+            button1.Size = new Size(82, 28);
             button1.TabIndex = 24;
             button1.Text = "Check All";
             button1.UseVisualStyleBackColor = true;
@@ -173,30 +177,30 @@ namespace LocalFileSender.WinForms.Views
             // TotalByteSizeLabel
             // 
             TotalByteSizeLabel.AutoSize = true;
-            TotalByteSizeLabel.Location = new Point(296, 296);
-            TotalByteSizeLabel.Margin = new Padding(12);
+            TotalByteSizeLabel.Location = new Point(259, 261);
+            TotalByteSizeLabel.Margin = new Padding(10, 9, 10, 9);
             TotalByteSizeLabel.Name = "TotalByteSizeLabel";
-            TotalByteSizeLabel.Size = new Size(34, 23);
+            TotalByteSizeLabel.Size = new Size(29, 19);
             TotalByteSizeLabel.TabIndex = 23;
             TotalByteSizeLabel.Text = "0 B";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(15, 15);
-            label2.Margin = new Padding(12, 12, 6, 12);
+            label2.Location = new Point(13, 11);
+            label2.Margin = new Padding(10, 9, 5, 9);
             label2.Name = "label2";
-            label2.Size = new Size(89, 23);
+            label2.Size = new Size(72, 19);
             label2.TabIndex = 22;
             label2.Text = "Hostname";
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(298, 15);
-            label1.Margin = new Padding(12, 12, 6, 12);
+            label1.Location = new Point(261, 11);
+            label1.Margin = new Padding(10, 9, 5, 9);
             label1.Name = "label1";
-            label1.Size = new Size(41, 23);
+            label1.Size = new Size(35, 19);
             label1.TabIndex = 21;
             label1.Text = "Port";
             // 
@@ -207,12 +211,12 @@ namespace LocalFileSender.WinForms.Views
             StoredFileTreeView.ImageKey = "FileDefault.png";
             StoredFileTreeView.ImageList = FileSystemIconList;
             StoredFileTreeView.ItemHeight = 34;
-            StoredFileTreeView.Location = new Point(12, 53);
-            StoredFileTreeView.Margin = new Padding(12);
+            StoredFileTreeView.Location = new Point(10, 40);
+            StoredFileTreeView.Margin = new Padding(10, 9, 10, 9);
             StoredFileTreeView.Name = "StoredFileTreeView";
             StoredFileTreeView.SelectedImageKey = "FileDefault.png";
             StoredFileTreeView.ShowNodeToolTips = true;
-            StoredFileTreeView.Size = new Size(743, 228);
+            StoredFileTreeView.Size = new Size(651, 211);
             StoredFileTreeView.TabIndex = 20;
             StoredFileTreeView.AfterCheck += StoredFileTreeView_AfterCheck;
             // 
@@ -267,28 +271,28 @@ namespace LocalFileSender.WinForms.Views
             // 
             // HostnameControl
             // 
-            HostnameControl.Location = new Point(116, 12);
-            HostnameControl.Margin = new Padding(6, 12, 6, 12);
+            HostnameControl.Location = new Point(102, 9);
+            HostnameControl.Margin = new Padding(5, 9, 5, 9);
             HostnameControl.Name = "HostnameControl";
             HostnameControl.PlaceholderText = "Hostname";
-            HostnameControl.Size = new Size(164, 30);
+            HostnameControl.Size = new Size(144, 26);
             HostnameControl.TabIndex = 18;
             // 
             // HostportControl
             // 
-            HostportControl.Location = new Point(351, 12);
-            HostportControl.Margin = new Padding(6, 12, 6, 12);
+            HostportControl.Location = new Point(307, 9);
+            HostportControl.Margin = new Padding(5, 9, 5, 9);
             HostportControl.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
             HostportControl.Name = "HostportControl";
-            HostportControl.Size = new Size(111, 30);
+            HostportControl.Size = new Size(97, 26);
             HostportControl.TabIndex = 16;
             // 
             // PollButton
             // 
-            PollButton.Location = new Point(661, 12);
-            PollButton.Margin = new Padding(12);
+            PollButton.Location = new Point(579, 7);
+            PollButton.Margin = new Padding(10, 9, 10, 9);
             PollButton.Name = "PollButton";
-            PollButton.Size = new Size(94, 30);
+            PollButton.Size = new Size(82, 28);
             PollButton.TabIndex = 17;
             PollButton.Text = "Poll";
             PollButton.UseVisualStyleBackColor = true;
@@ -302,31 +306,32 @@ namespace LocalFileSender.WinForms.Views
             ServerTab.Controls.Add(FileServicePortLabel);
             ServerTab.Controls.Add(FileServiceStartStopButton);
             ServerTab.Controls.Add(FileServicePortControl);
-            ServerTab.Location = new Point(4, 32);
+            ServerTab.Location = new Point(4, 28);
+            ServerTab.Margin = new Padding(3, 2, 3, 2);
             ServerTab.Name = "ServerTab";
-            ServerTab.Padding = new Padding(3);
-            ServerTab.Size = new Size(770, 393);
+            ServerTab.Padding = new Padding(3, 2, 3, 2);
+            ServerTab.Size = new Size(673, 329);
             ServerTab.TabIndex = 1;
             ServerTab.Text = "Server";
             ServerTab.UseVisualStyleBackColor = true;
             // 
             // ServerLoggerRichBox
             // 
-            ServerLoggerRichBox.Location = new Point(15, 63);
-            ServerLoggerRichBox.Margin = new Padding(12);
+            ServerLoggerRichBox.Location = new Point(13, 47);
+            ServerLoggerRichBox.Margin = new Padding(10, 9, 10, 9);
             ServerLoggerRichBox.Name = "ServerLoggerRichBox";
             ServerLoggerRichBox.ReadOnly = true;
-            ServerLoggerRichBox.Size = new Size(740, 315);
+            ServerLoggerRichBox.Size = new Size(648, 271);
             ServerLoggerRichBox.TabIndex = 31;
             ServerLoggerRichBox.Text = "";
             ServerLoggerRichBox.TextChanged += ServerLoggerRichBox_TextChanged;
             // 
             // SelectSharedDirectoryButton
             // 
-            SelectSharedDirectoryButton.Location = new Point(379, 15);
-            SelectSharedDirectoryButton.Margin = new Padding(12, 12, 6, 12);
+            SelectSharedDirectoryButton.Location = new Point(331, 11);
+            SelectSharedDirectoryButton.Margin = new Padding(10, 9, 5, 9);
             SelectSharedDirectoryButton.Name = "SelectSharedDirectoryButton";
-            SelectSharedDirectoryButton.Size = new Size(94, 30);
+            SelectSharedDirectoryButton.Size = new Size(82, 28);
             SelectSharedDirectoryButton.TabIndex = 30;
             SelectSharedDirectoryButton.Text = "Choose";
             SelectSharedDirectoryButton.UseVisualStyleBackColor = true;
@@ -334,61 +339,62 @@ namespace LocalFileSender.WinForms.Views
             // SharedDirectoryLabel
             // 
             SharedDirectoryLabel.AutoSize = true;
-            SharedDirectoryLabel.Location = new Point(15, 16);
-            SharedDirectoryLabel.Margin = new Padding(12, 12, 6, 12);
+            SharedDirectoryLabel.Location = new Point(13, 12);
+            SharedDirectoryLabel.Margin = new Padding(10, 9, 5, 9);
             SharedDirectoryLabel.Name = "SharedDirectoryLabel";
-            SharedDirectoryLabel.Size = new Size(139, 23);
+            SharedDirectoryLabel.Size = new Size(115, 19);
             SharedDirectoryLabel.TabIndex = 17;
             SharedDirectoryLabel.Text = "Shared Directory";
             // 
             // SharedDirectoryControl
             // 
-            SharedDirectoryControl.Location = new Point(166, 15);
-            SharedDirectoryControl.Margin = new Padding(6, 12, 6, 12);
+            SharedDirectoryControl.Location = new Point(145, 11);
+            SharedDirectoryControl.Margin = new Padding(5, 9, 5, 9);
             SharedDirectoryControl.Name = "SharedDirectoryControl";
             SharedDirectoryControl.PlaceholderText = "Directory";
             SharedDirectoryControl.ReadOnly = true;
-            SharedDirectoryControl.Size = new Size(195, 30);
+            SharedDirectoryControl.Size = new Size(171, 26);
             SharedDirectoryControl.TabIndex = 18;
             // 
             // FileServicePortLabel
             // 
             FileServicePortLabel.AutoSize = true;
-            FileServicePortLabel.Location = new Point(485, 19);
-            FileServicePortLabel.Margin = new Padding(6, 12, 6, 12);
+            FileServicePortLabel.Location = new Point(424, 14);
+            FileServicePortLabel.Margin = new Padding(5, 9, 5, 9);
             FileServicePortLabel.Name = "FileServicePortLabel";
-            FileServicePortLabel.Size = new Size(41, 23);
+            FileServicePortLabel.Size = new Size(35, 19);
             FileServicePortLabel.TabIndex = 16;
             FileServicePortLabel.Text = "Port";
             // 
             // FileServiceStartStopButton
             // 
-            FileServiceStartStopButton.Location = new Point(664, 15);
-            FileServiceStartStopButton.Margin = new Padding(12);
+            FileServiceStartStopButton.Location = new Point(579, 11);
+            FileServiceStartStopButton.Margin = new Padding(10, 9, 10, 9);
             FileServiceStartStopButton.Name = "FileServiceStartStopButton";
-            FileServiceStartStopButton.Size = new Size(94, 30);
+            FileServiceStartStopButton.Size = new Size(82, 28);
             FileServiceStartStopButton.TabIndex = 13;
             FileServiceStartStopButton.Text = "start_stop";
             FileServiceStartStopButton.UseVisualStyleBackColor = true;
             // 
             // FileServicePortControl
             // 
-            FileServicePortControl.Location = new Point(538, 15);
-            FileServicePortControl.Margin = new Padding(6, 12, 6, 12);
+            FileServicePortControl.Location = new Point(469, 12);
+            FileServicePortControl.Margin = new Padding(5, 9, 5, 9);
             FileServicePortControl.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
             FileServicePortControl.Name = "FileServicePortControl";
-            FileServicePortControl.Size = new Size(103, 30);
+            FileServicePortControl.Size = new Size(90, 26);
             FileServicePortControl.TabIndex = 14;
             // 
             // MainView
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(802, 453);
+            ClientSize = new Size(704, 381);
             Controls.Add(TabPanel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MinimumSize = new Size(820, 500);
+            Margin = new Padding(3, 2, 3, 2);
+            MinimumSize = new Size(720, 420);
             Name = "MainView";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Local File Sender";
